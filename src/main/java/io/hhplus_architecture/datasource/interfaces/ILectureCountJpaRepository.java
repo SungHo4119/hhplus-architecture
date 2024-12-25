@@ -10,12 +10,14 @@ import org.springframework.data.repository.query.Param;
 
 public interface ILectureCountJpaRepository extends JpaRepository<LectureCount, Long> {
 
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     LectureCount findBylectureId(Long lectureId);
 
     @Query("SELECT lc FROM LectureCount lc WHERE lc.lectureId IN :lectureIds")
     List<LectureCount> findByLectureIds(@Param("lectureIds") List<Long> lectureIds);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+
     LectureCount save(LectureCount lectureCount);
 
 }
