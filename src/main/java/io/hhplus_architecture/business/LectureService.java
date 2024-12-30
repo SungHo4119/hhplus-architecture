@@ -120,4 +120,14 @@ public class LectureService {
         findStudentById(studentId);
         return lectureHistoryRepository.findByStudentId(studentId);
     }
+
+    @Transactional
+    public LectureCount getLectureCount(Long lectureId) {
+        return lectureRepository.findLectureCountById(lectureId);
+    }
+
+    @Transactional
+    public List<LectureHistory> getLectureHistoryByLectureId(Long lectureId) {
+        return lectureHistoryRepository.findByLectureId(lectureId);
+    }
 }
