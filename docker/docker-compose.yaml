@@ -1,0 +1,11 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: test_db
+      MYSQL_ROOT_PASSWORD: 1234
+
+      TZ: 'Asia/Seoul'
+    ports:
+      - "3306:3306"
