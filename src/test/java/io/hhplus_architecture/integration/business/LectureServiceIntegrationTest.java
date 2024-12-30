@@ -274,4 +274,54 @@ public class LectureServiceIntegrationTest {
             assertEquals(30, lc.getCount());
         }
     }
+
+    @Nested
+    public class step4 {
+
+        @AfterEach
+        void afterEach() {
+            iLectureHistoryJpaRepository.deleteAll();
+            iLectureJpaRepository.deleteAll();
+            iStudentJpaRepository.deleteAll();
+        }
+
+        @Test
+        void step4_동일한_신청자가_연속신청시_1건만_성공() throws InterruptedException {
+            // given
+            int count = 5;
+
+            Student s = studentService.saveStudent("학생");
+            // 강의 셋팅
+            Lecture l = lectureService.saveLecture("강의1", "강사1", "2024-01-01");
+
+            ExecutorService executorService = Executors.newFixedThreadPool(count);
+            CountDownLatch countDownLatch = new CountDownLatch(count);
+
+            for (int i = 0; i < count; i++) {
+                executorService.execute(() -> {
+                    try {
+                        // 강의 신청을 처리하는 메서드
+                        lectureService.applyLecture(s.getId(), l.getId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
+            }
+
+            countDownLatch.await();
+            executorService.shutdown();
+
+            // then
+            LectureCount lc = lectureService.getLectureCount(l.getId());
+            List<LectureHistory> lh = lectureService.getLectureHistoryByLectureId(l.getId());
+            assertEquals(1, lh.size());
+            assertEquals(1, lc.getCount());
+            System.out.println("lc = " + lc.getCount());
+            System.out.println("lh = " + lh.size());
+
+        }
+
+    }
 }
